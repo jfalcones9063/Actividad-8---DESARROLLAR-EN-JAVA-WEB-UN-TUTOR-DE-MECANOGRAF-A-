@@ -1,0 +1,95 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Aplicación de Mecanografía</title>
+</head>
+<body>
+    <h1>Aplicación de Mecanografía</h1>
+    <textarea id="textoUsuario" rows="5" cols="50" readonly></textarea><br>
+
+    <!-- Tu teclado virtual con objetos JButton -->
+    <!-- Cada botón deberá tener un evento onClick para manejar la pulsación -->
+    
+    <script>
+        // Función para manejar la pulsación de las teclas
+        function teclaPresionada(caracter) {
+            // Lógica para resaltar el botón correspondiente y agregar el carácter al textarea
+        }
+    </script>
+</body>
+</html>
+ 
+package com.example.mecanografia;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/MainServlet")
+public class MainServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    private List<String> pangramas;
+    private String pangramaActual;
+    private int correctas;
+    private int incorrectas;
+    private List<Character> teclasDificiles;
+
+    public MainServlet() {
+        super();
+        cargarPangramas();
+        reiniciarEstadisticas();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Mostrar la página principal (index.jsp)
+        request.getRequestDispatcher("/index.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lógica para manejar la pulsación de teclas y evaluar precisión
+        String teclaPresionada = request.getParameter("tecla");
+        // Lógica para verificar si la tecla es correcta o incorrecta
+        // Actualizar estadísticas y mostrar nuevo pangrama si es necesario
+        // Devolver respuesta a la interfaz de usuario
+    }
+
+    private void cargarPangramas() {
+        pangramas = new ArrayList<>();
+        try {
+            InputStream is = getServletContext().getResourceAsStream("/WEB-INF/pangramas.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                pangramas.add(linea);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void reiniciarEstadisticas() {
+        correctas = 0;
+        incorrectas = 0;
+        teclasDificiles = new ArrayList<>();
+        seleccionarNuevoPangrama();
+    }
+
+    private void seleccionarNuevoPangrama() {
+        Random random = new Random();
+        pangramaActual = pangramas.get(random.nextInt(pangramas.size()));
+    }
+}
